@@ -1,5 +1,5 @@
 <template>
-  <h1>首頁</h1>
+  <h1>個人資料</h1>
 </template>
 
 <script setup>

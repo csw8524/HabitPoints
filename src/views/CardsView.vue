@@ -1,5 +1,5 @@
 <template>
-  <h1>首頁</h1>
+  <h1>集點卡</h1>
 </template>
 
 <script setup>
