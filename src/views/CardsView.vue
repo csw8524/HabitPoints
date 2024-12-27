@@ -1,6 +1,6 @@
 <template>
-  <div class="">
-    <h1 class="mb-2 text-center">集點卡</h1>
+  <div class="pb-12">
+    <h1 class="mb-2 text-center">我的集點卡</h1>
     <div
       v-for="card in cards"
       :key="card.id"
@@ -14,13 +14,51 @@
         <div class="w-full bg-gray-200 rounded-full h-2.5 mr-4">
           <div class="bg-blue-600 h-2.5 rounded-full" :style="progressStyle(card)"></div>
         </div>
-        <!-- <button
-          class="mt-2 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-          @click="addPoint(card)"
-        >
-          增加點數
-        </button> -->
       </RouterLink>
+    </div>
+  </div>
+  <!-- 集點按鈕 -->
+  <div @click="showModal" class="flex items-center fixed bottom-12 right-8">
+    <button
+      class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center"
+    >
+      +
+    </button>
+  </div>
+
+  <!-- 新增集點卡的表單彈窗 -->
+  <div v-if="isModalVisible" @click.self="hideModal"
+    class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center" >
+    <div class="bg-white p-6 rounded-lg shadow-lg w-80" @click.stop>
+      <h2 class="text-lg font-bold mb-4">新增集點卡</h2>
+      <form @submit.prevent="addNewCard">
+        <div class="mb-4">
+          <label class="block text-gray-700">名稱</label>
+          <input v-model="newCard.cardName"
+            type="text" class="w-full border border-gray-300 p-2 rounded" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700">點數數量</label>
+          <input v-model.number="newCard.totalPoints"
+            type="number" min="1"
+            class="w-full border border-gray-300 p-2 rounded" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700">目標獎勵</label>
+          <input v-model="newCard.reward"
+            type="text" class="w-full border border-gray-300 p-2 rounded" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700">備註</label>
+          <textarea v-model="newCard.note"
+            class="w-full border border-gray-300 p-2 rounded"></textarea>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" @click="hideModal"
+            class="bg-gray-500 text-white px-4 py-2 rounded mr-2">取消</button>
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">確認</button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -115,33 +153,47 @@ const cards = ref([
   },
 ]);
 
+const isModalVisible = ref(false);
+
+const newCard = ref({
+  cardName: '',
+  totalPoints: 0,
+  reward: '',
+  note: '',
+});
+
+const showModal = () => {
+  isModalVisible.value = true;
+};
+
+const hideModal = () => {
+  isModalVisible.value = false;
+};
+
+const addNewCard = () => {
+  const card = {
+    id: cards.value.length + 1,
+    cardName: newCard.value.cardName,
+    totalPoints: newCard.value.totalPoints,
+    currentPoints: 0,
+    reward: newCard.value.reward,
+    logs: [],
+  };
+  cards.value.push(card);
+  hideModal();
+  // 清空表單
+  newCard.value = {
+    cardName: '',
+    totalPoints: 0,
+    reward: '',
+    note: '',
+  };
+};
+
 const progressStyle = (card) => {
   const width = (card.currentPoints / card.totalPoints) * 100;
   return { width: `${width}%` };
 };
-
-// function addPoint(card) {
-//   const cardIndex = cards.value.findIndex((c) => c.id === card.id);
-//   if (cardIndex !== -1
-//       && cards.value[cardIndex].currentPoints < cards.value[cardIndex].totalPoints) {
-//     const updatedCard = {
-//       ...cards.value[cardIndex],
-//       currentPoints: cards.value[cardIndex].currentPoints + 1,
-//       logs: [
-//         ...cards.value[cardIndex].logs,
-//         {
-//           id: cards.value[cardIndex].logs.length + 1,
-//           date: new Date().toISOString().slice(0, 10), // 今天的日期
-//           points: 1,
-//           note: '手動增加點數',
-//         },
-//       ],
-//     };
-
-//     // 更新 cards 陣列
-//     cards.value.splice(cardIndex, 1, updatedCard);
-//   }
-// }
 </script>
 
 <style scoped>
