@@ -8,8 +8,13 @@ const routes = [
   },
   {
     path: '/cards',
-    name: 'Card',
+    name: 'Cards',
     component: () => import('../views/CardsView.vue'),
+  },
+  {
+    path: '/card/:id',
+    name: 'Card',
+    component: () => import('../views/CardView.vue'),
   },
   {
     path: '/profile',
