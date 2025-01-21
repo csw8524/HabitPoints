@@ -14,13 +14,11 @@ export default defineStore('cardsStore', () => {
         {
           id: 1,
           date: '2023-10-01',
-          points: 1,
           note: '跑步30分鐘',
         },
         {
           id: 2,
           date: '2023-10-02',
-          points: 2,
           note: '參加瑜伽課',
         },
       ],
@@ -36,13 +34,11 @@ export default defineStore('cardsStore', () => {
         {
           id: 1,
           date: '2023-10-03',
-          points: 1,
           note: '讀了一章書',
         },
         {
           id: 2,
           date: '2023-10-04',
-          points: 1,
           note: '寫了讀書心得',
         },
       ],
@@ -58,13 +54,11 @@ export default defineStore('cardsStore', () => {
         {
           id: 1,
           date: '2023-10-11',
-          points: 1,
           note: '騎腳踏車代步',
         },
         {
           id: 2,
           date: '2023-10-12',
-          points: 1,
           note: '自備環保杯',
         },
       ],
@@ -80,13 +74,11 @@ export default defineStore('cardsStore', () => {
         {
           id: 1,
           date: '2023-10-16',
-          points: 2,
           note: '一次處理三封重要信件',
         },
         {
           id: 2,
           date: '2023-10-17',
-          points: 3,
           note: '完成專案報告初稿',
         },
       ],
@@ -102,14 +94,13 @@ export default defineStore('cardsStore', () => {
         {
           id: 1,
           date: '2023-10-19',
-          points: 1,
           note: '挑戰新桌遊規則教學',
         },
       ],
     },
   ]);
 
-  // 新增卡片的動作
+  // 新增集點卡
   function addCard(newCardData) {
     // 先簡單幫它設定一個遞增的 id
     const newId = cards.value.length
@@ -133,15 +124,38 @@ export default defineStore('cardsStore', () => {
     cards.value.push(card);
   }
 
+  // 新增集點
+  function addLogToCard(cardId, newLogData) {
+    const card = cards.value.find((c) => c.id === cardId);
+    if (!card) return;
+
+    // 找出最後一筆 log id + 1
+    let newLogId = 1;
+    if (card.logs.length > 0) {
+      newLogId = card.logs[card.logs.length - 1].id + 1;
+    }
+
+    // 寫進 logs
+    card.logs.push({
+      id: newLogId,
+      date: newLogData.date,
+      points: newLogData.points,
+      note: newLogData.note,
+    });
+
+    // 順便更新 currentPoints
+    card.currentPoints += newLogData.points;
+  }
+
   // 取得單一卡片資料
   function getCardById(id) {
     return cards.value.find((card) => card.id === Number(id));
   }
 
-  // 回傳我們想要用的東西
   return {
     cards,
     addCard,
     getCardById,
+    addLogToCard,
   };
 });
